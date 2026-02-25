@@ -41,7 +41,7 @@ export default function Dashboard() {
 
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className="group relative inline-flex items-center gap-2 px-6 py-3.5 bg-white text-black font-medium rounded-full shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                        className="group relative hidden md:inline-flex items-center gap-2 px-6 py-3.5 bg-white text-black font-medium rounded-full shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
                     >
                         <svg
                             className="w-5 h-5 transition-transform group-hover:rotate-90 duration-300"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import useTaskStore from "@/lib/store";
 
 export default function CreateTaskModal({ isOpen, onClose }) {
@@ -25,7 +26,10 @@ export default function CreateTaskModal({ isOpen, onClose }) {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isOpen]);
 
-    if (!isOpen) return null;
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    if (!isOpen || !mounted) return null;
 
     const handleFileUpload = async (e) => {
         const file = e.target.files?.[0];
@@ -106,8 +110,8 @@ export default function CreateTaskModal({ isOpen, onClose }) {
         { key: "video", label: "Video", icon: "🎬" },
     ];
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    return createPortal(
+        <div className="fixed inset-[0] z-[100] flex items-end sm:items-center justify-center sm:p-6">
             {/* Cinematic Blur Backdrop */}
             <div
                 className="absolute inset-0 bg-black/40 backdrop-blur-xl transition-all duration-300"
@@ -115,10 +119,14 @@ export default function CreateTaskModal({ isOpen, onClose }) {
             />
 
             {/* Modal Card */}
-            <div className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden fade-in-up">
+            <div className="relative w-full max-w-lg bg-[#0a0a0a] sm:border border-white/10 border-t rounded-t-[32px] sm:rounded-3xl shadow-[0_-20px_50px_rgba(0,0,0,0.5)] sm:shadow-2xl overflow-hidden fade-in-up flex flex-col max-h-[92vh] sm:max-h-none">
+                {/* Mobile Drag Indicator */}
+                <div className="w-full flex justify-center pt-3 pb-1 sm:hidden absolute top-0 z-10">
+                    <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+                </div>
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-white/[0.04]">
+                <div className="flex items-center justify-between p-6 pt-10 sm:pt-6 border-b border-white/[0.04] shrink-0">
                     <h2 className="text-xl font-medium tracking-tight text-white">
                         Create capture
                     </h2>
@@ -133,7 +141,7 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                 </div>
 
                 {/* Input Form Area */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1 pb-safe max-h-[75vh]">
                     {/* Modern Tab Selector */}
                     <div className="flex p-1 bg-white/[0.03] border border-white/5 rounded-2xl">
                         {types.map((t) => (
@@ -142,8 +150,8 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                                 type="button"
                                 onClick={() => setType(t.key)}
                                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${type === t.key
-                                        ? "bg-white/10 text-white shadow-sm"
-                                        : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
+                                    ? "bg-white/10 text-white shadow-sm"
+                                    : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
                                     }`}
                             >
                                 <span className="opacity-80 -mt-0.5">{t.icon}</span>
@@ -257,6 +265,7 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

@@ -104,8 +104,8 @@ export default function TaskCard({ task, onClick }) {
                     onClick={handleToggle}
                     disabled={isToggling}
                     className={`flex-shrink-0 w-5 h-5 rounded-[4px] border flex items-center justify-center transition-all ${task.isCompleted
-                            ? "bg-white border-white text-black"
-                            : "border-white/20 hover:border-white/50 text-transparent"
+                        ? "bg-white border-white text-black"
+                        : "border-white/20 hover:border-white/50 text-transparent"
                         } ${isToggling ? "opacity-50" : ""}`}
                 >
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -171,7 +171,7 @@ export default function TaskCard({ task, onClick }) {
                 </div>
 
                 {/* Hover Actions */}
-                <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity pr-2">
+                <div className="flex-shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity pr-1 md:pr-2">
                     <button
                         onClick={handleDelete}
                         disabled={isDeleting}

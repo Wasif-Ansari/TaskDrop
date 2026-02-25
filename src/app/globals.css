@@ -63,6 +63,15 @@
         overflow: hidden;
     }
 
+    /* PWA Safe Area Utilities */
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    .pt-safe {
+        padding-top: env(safe-area-inset-top, 20px);
+    }
+
     /* Smooth enter animations */
     .fade-in-up {
         animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;

@@ -72,23 +72,3 @@ self.addEventListener("fetch", (event) => {
     );
 });
 
-// Handle share target
-self.addEventListener("fetch", (event) => {
-    if (
-        event.request.method === "POST" &&
-        event.request.url.includes("/api/share")
-    ) {
-        event.respondWith(
-            (async () => {
-                const formData = await event.request.formData();
-                const response = await fetch("/api/share", {
-                    method: "POST",
-                    body: formData,
-                });
-
-                // Redirect to dashboard after sharing
-                return Response.redirect("/", 303);
-            })()
-        );
-    }
-});

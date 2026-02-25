@@ -2,10 +2,12 @@
 
 import useTaskStore from "@/lib/store";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 export default function TaskDetailModal({ task, isOpen, onClose }) {
     const { toggleTask, deleteTask } = useTaskStore();
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isToggling, setIsToggling] = useState(false);
 
     // Close on ESC
     useEffect(() => {
@@ -16,10 +18,21 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isOpen, onClose]);
 
-    if (!isOpen || !task) return null;
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    if (!isOpen || !task || !mounted) return null;
 
     const handleToggle = async () => {
+        setIsToggling(true);
         await toggleTask(task._id);
+        setIsToggling(false);
+        // Only auto-close if we are marking it as COMPLETE, not reopening it
+        if (!task.isCompleted) {
+            setTimeout(() => {
+                onClose();
+            }, 300); // Small 300ms delay so the user sees the visual change first
+        }
     };
 
     const handleDelete = async () => {
@@ -40,8 +53,8 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
     const config = typeConfig[task.type] || typeConfig.text;
     const thumbnailUrl = task.mediaUrl || task.linkPreview?.image || "";
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+    return createPortal(
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-6">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-2xl transition-all duration-500"
@@ -49,7 +62,12 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
             />
 
             {/* Modal */}
-            <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden fade-in-up max-h-[90vh] flex flex-col">
+            <div className="relative w-full sm:max-w-2xl bg-[#0a0a0a] sm:border border-white/10 border-t rounded-t-[32px] sm:rounded-3xl shadow-[0_-20px_50px_rgba(0,0,0,0.5)] overflow-hidden fade-in-up flex flex-col max-h-[92vh] sm:max-h-[90vh]">
+
+                {/* Mobile Drag Indicator */}
+                <div className="w-full flex justify-center pt-3 pb-1 sm:hidden absolute top-0 z-10 pointer-events-none">
+                    <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+                </div>
 
                 {/* Header Actions Overlay */}
                 <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
@@ -106,7 +124,7 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
                 )}
 
                 {/* Scrollable Content Area */}
-                <div className="p-6 sm:p-10 overflow-y-auto custom-scrollbar flex-1 pb-24">
+                <div className="p-6 pt-10 sm:pt-10 overflow-y-auto custom-scrollbar flex-1 pb-24">
                     <div className="flex items-center gap-3 mb-4">
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${config.border} ${config.color} bg-white/[0.02]`}>
                             <span className="opacity-80">{config.icon}</span>
@@ -162,12 +180,15 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent pointer-events-none flex justify-center">
                     <button
                         onClick={handleToggle}
+                        disabled={isToggling}
                         className={`pointer-events-auto px-8 py-3.5 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-3 shadow-2xl ${task.isCompleted
-                                ? "bg-white/[0.05] text-white hover:bg-white/10 hover:scale-[1.02] border border-white/10"
-                                : "bg-white text-black hover:scale-[1.02] active:scale-[0.98]"
-                            }`}
+                            ? "bg-white/[0.05] text-white hover:bg-white/10 hover:scale-[1.02] border border-white/10"
+                            : "bg-white text-black hover:scale-[1.02] active:scale-[0.98]"
+                            } ${isToggling ? "opacity-70 scale-95" : ""}`}
                     >
-                        {task.isCompleted ? (
+                        {isToggling ? (
+                            <div className={`w-5 h-5 border-2 border-t-transparent rounded-full animate-spin ${task.isCompleted ? 'border-white/50' : 'border-black/50'}`} />
+                        ) : task.isCompleted ? (
                             <>
                                 <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -186,6 +207,7 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
                 </div>
 
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

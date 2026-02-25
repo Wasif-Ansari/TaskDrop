@@ -24,16 +24,16 @@ export default function FilterBar() {
     };
 
     return (
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-4 md:mt-8">
             {/* Segmented Control Filter */}
-            <div className="flex items-center p-1 glass-card rounded-xl">
+            <div className="flex w-full md:w-auto items-center p-1 glass-card rounded-xl overflow-x-auto hide-scrollbar">
                 {filters.map((f) => {
                     const isActive = filter === f.key;
                     return (
                         <button
                             key={f.key}
                             onClick={() => setFilter(f.key)}
-                            className={`relative flex items-center justify-center gap-2 px-5 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${isActive ? "text-white" : "text-gray-400 hover:text-gray-200"
+                            className={`flex-1 md:flex-none relative flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 text-[13px] sm:text-sm font-medium transition-all duration-300 rounded-lg whitespace-nowrap ${isActive ? "text-white" : "text-gray-400 hover:text-gray-200"
                                 }`}
                         >
                             {isActive && (

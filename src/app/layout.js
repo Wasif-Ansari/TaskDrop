@@ -1,6 +1,7 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata = {
   title: "Clipper - Cross-Device To-Do & Clipper",
@@ -40,10 +41,12 @@ export default function RootLayout({ children }) {
           content="black-translucent"
         />
       </head>
-      <body className="mesh-gradient min-h-screen">
-        <ServiceWorkerRegistration />
-        <Navbar />
-        <main>{children}</main>
+      <body className="mesh-gradient min-h-screen bg-background text-foreground">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ServiceWorkerRegistration />
+          <Navbar />
+          <main>{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   );

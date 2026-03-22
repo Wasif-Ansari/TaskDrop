@@ -33,18 +33,18 @@ export default function FilterBar() {
                         <button
                             key={f.key}
                             onClick={() => setFilter(f.key)}
-                            className={`flex-1 md:flex-none relative flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 text-[13px] sm:text-sm font-medium transition-all duration-300 rounded-lg whitespace-nowrap ${isActive ? "text-white" : "text-gray-400 hover:text-gray-200"
+                            className={`flex-1 md:flex-none relative flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 text-[13px] sm:text-sm font-semibold transition-all duration-300 rounded-xl whitespace-nowrap ${isActive ? "text-foreground" : "text-gray-500 hover:text-foreground"
                                 }`}
                         >
                             {isActive && (
-                                <div className="absolute inset-0 bg-white/10 rounded-lg shadow-sm border border-white/10" />
+                                <div className="absolute inset-0 bg-foreground/[0.08] dark:bg-foreground/[0.05] rounded-[10px] shadow-sm border border-foreground/10" />
                             )}
                             <span className="relative z-10">{f.label}</span>
                             <span
-                                className={`relative z-10 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] rounded-md border
+                                className={`relative z-10 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] rounded-lg border
                   ${isActive
-                                        ? "bg-white/20 border-white/10 text-white"
-                                        : "bg-transparent border-white/5 text-gray-500"
+                                        ? "bg-foreground/10 border-foreground/10 text-foreground"
+                                        : "bg-transparent border-foreground/5 text-gray-500"
                                     }
                 `}
                             >
@@ -74,12 +74,12 @@ export default function FilterBar() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
-                        className="w-full py-2.5 pr-4 bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none"
+                        className="w-full py-2.5 pr-4 bg-transparent text-sm text-foreground mb-0.5 placeholder-gray-500 focus:outline-none"
                     />
                     {searchQuery && (
                         <button
                             onClick={() => setSearchQuery("")}
-                            className="px-3 text-gray-400 hover:text-white"
+                            className="px-3 text-gray-400 hover:text-foreground"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

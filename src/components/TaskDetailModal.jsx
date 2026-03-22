@@ -62,7 +62,7 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
             />
 
             {/* Modal */}
-            <div className="relative w-full sm:max-w-2xl bg-[#0a0a0a] sm:border border-white/10 border-t rounded-t-[32px] sm:rounded-3xl shadow-[0_-20px_50px_rgba(0,0,0,0.5)] overflow-hidden fade-in-up flex flex-col max-h-[92vh] sm:max-h-[90vh]">
+            <div className="relative w-full sm:max-w-2xl bg-[var(--modal-bg)] sm:border border-[var(--input-border)] border-t rounded-t-[32px] sm:rounded-3xl shadow-[0_-20px_80px_rgba(var(--foreground-rgb),0.1)] overflow-hidden fade-in-up flex flex-col max-h-[92vh] sm:max-h-[90vh]">
 
                 {/* Mobile Drag Indicator */}
                 <div className="w-full flex justify-center pt-3 pb-1 sm:hidden absolute top-0 z-10 pointer-events-none">
@@ -87,7 +87,7 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
                     </button>
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all"
+                        className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-[var(--input-border)] flex items-center justify-center text-gray-400 hover:text-white transition-all"
                         title="Close (Esc)"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -137,7 +137,7 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
                         </span>
                     </div>
 
-                    <h2 className={`text-2xl sm:text-3xl font-semibold tracking-tight leading-snug mb-6 ${task.isCompleted ? "text-gray-500 line-through" : "text-white"}`}>
+                    <h2 className={`text-2xl sm:text-3xl font-semibold tracking-tight leading-snug mb-6 ${task.isCompleted ? "text-gray-500 line-through" : "text-foreground"}`}>
                         {task.title}
                     </h2>
 
@@ -177,17 +177,17 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
                 </div>
 
                 {/* Bottom Actions Bar */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent pointer-events-none flex justify-center">
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--modal-bg)] via-[var(--modal-bg)] to-transparent pointer-events-none flex justify-center">
                     <button
                         onClick={handleToggle}
                         disabled={isToggling}
                         className={`pointer-events-auto px-8 py-3.5 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-3 shadow-2xl ${task.isCompleted
-                            ? "bg-white/[0.05] text-white hover:bg-white/10 hover:scale-[1.02] border border-white/10"
-                            : "bg-white text-black hover:scale-[1.02] active:scale-[0.98]"
+                            ? "bg-foreground/5 text-foreground hover:bg-foreground/10 hover:scale-[1.02] border border-foreground/10"
+                            : "bg-foreground text-background hover:scale-[1.02] active:scale-[0.98]"
                             } ${isToggling ? "opacity-70 scale-95" : ""}`}
                     >
                         {isToggling ? (
-                            <div className={`w-5 h-5 border-2 border-t-transparent rounded-full animate-spin ${task.isCompleted ? 'border-white/50' : 'border-black/50'}`} />
+                            <div className={`w-5 h-5 border-2 border-t-transparent rounded-full animate-spin ${task.isCompleted ? 'border-foreground/50' : 'border-background/50'}`} />
                         ) : task.isCompleted ? (
                             <>
                                 <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

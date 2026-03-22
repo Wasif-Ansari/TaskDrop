@@ -19,43 +19,40 @@ export default function Dashboard() {
     return (
         <>
             <div className="ambient-bg" />
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 relative z-10">
                 {/* Header Section */}
-                <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 fade-in-up">
-                    <div className="space-y-2 max-w-2xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-400 mb-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                            Real-time Sync Active
+                <div className="mb-12 sm:mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8 fade-in-up">
+                    <div className="space-y-4 max-w-2xl">
+                        <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 text-[10px] font-bold text-[var(--accent-primary)] uppercase tracking-widest mb-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+                            System Online
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white leading-tight">
-                            Capture <span className="text-gray-500">everything.</span> <br />
-                            Lose <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">nothing.</span>
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-foreground leading-[1.1] sm:leading-[1.05]">
+                            Capture Your <br className="hidden sm:block" />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-fuchsia-500">Digital World.</span>
                         </h1>
-                        <p className="text-gray-400 text-lg mt-4 max-w-xl font-light">
+                        <p className="text-gray-600 dark:text-gray-500 text-lg sm:text-xl max-w-xl font-medium leading-relaxed">
                             {pendingCount > 0
-                                ? `You have ${pendingCount} pending task${pendingCount > 1 ? "s" : ""} waiting for your attention.`
-                                : "You are all caught up for the day."}
+                                ? `You have ${pendingCount} prioritized items awaiting your action.`
+                                : "Your workspace is perfectly organized."}
                         </p>
                     </div>
 
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className="group relative hidden md:inline-flex items-center gap-2 px-6 py-3.5 bg-white text-black font-medium rounded-full shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                        className="group relative hidden md:inline-flex items-center gap-3 px-8 py-4 bg-foreground text-background font-bold rounded-2xl shadow-[0_20px_40px_rgba(var(--foreground-rgb),0.2)] hover:shadow-[0_25px_50px_rgba(var(--foreground-rgb),0.3)] hover:-translate-y-1 active:translate-y-0.5 active:scale-95 transition-all duration-300 overflow-hidden"
                     >
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-violet-500 opacity-0 group-hover:opacity-10 transition-opacity" />
                         <svg
-                            className="w-5 h-5 transition-transform group-hover:rotate-90 duration-300"
+                            className="w-5 h-5 transition-transform group-hover:rotate-90 duration-500"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
-                            strokeWidth={2}
+                            strokeWidth={3}
                         >
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
-                        <span>Capture Target</span>
-
-                        {/* Hover Glow */}
-                        <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 blur-md transition-opacity" />
+                        <span>New Capture</span>
                     </button>
                 </div>
 
@@ -98,7 +95,7 @@ export default function Dashboard() {
                 {/* Mobile Sticky FAB */}
                 <button
                     onClick={() => setShowCreateModal(true)}
-                    className="md:hidden fixed bottom-8 right-6 w-14 h-14 bg-white text-black rounded-full shadow-[0_8px_30px_rgba(255,255,255,0.2)] flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40"
+                    className="md:hidden fixed bottom-8 right-6 w-14 h-14 bg-foreground text-background rounded-full shadow-[0_8px_30px_rgba(var(--foreground-rgb),0.2)] flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40"
                 >
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

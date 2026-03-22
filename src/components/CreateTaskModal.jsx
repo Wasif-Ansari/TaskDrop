@@ -119,20 +119,20 @@ export default function CreateTaskModal({ isOpen, onClose }) {
             />
 
             {/* Modal Card */}
-            <div className="relative w-full max-w-lg bg-[#0a0a0a] sm:border border-white/10 border-t rounded-t-[32px] sm:rounded-3xl shadow-[0_-20px_50px_rgba(0,0,0,0.5)] sm:shadow-2xl overflow-hidden fade-in-up flex flex-col max-h-[92vh] sm:max-h-none">
+            <div className="relative w-full max-w-lg bg-[var(--modal-bg)] sm:border border-[var(--input-border)] border-t rounded-t-[32px] sm:rounded-3xl shadow-[0_-20px_80px_rgba(var(--foreground-rgb),0.1)] sm:shadow-[0_25px_70px_-10px_rgba(var(--foreground-rgb),0.15)] overflow-hidden fade-in-up flex flex-col max-h-[92vh] sm:max-h-none">
                 {/* Mobile Drag Indicator */}
                 <div className="w-full flex justify-center pt-3 pb-1 sm:hidden absolute top-0 z-10">
                     <div className="w-12 h-1.5 bg-white/20 rounded-full" />
                 </div>
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 pt-10 sm:pt-6 border-b border-white/[0.04] shrink-0">
-                    <h2 className="text-xl font-medium tracking-tight text-white">
+                <div className="flex items-center justify-between p-6 pt-10 sm:pt-6 border-b border-foreground/[0.04] shrink-0">
+                    <h2 className="text-xl font-medium tracking-tight text-foreground">
                         Create capture
                     </h2>
                     <button
                         onClick={resetAndClose}
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-foreground hover:bg-foreground/10 transition-colors"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -143,15 +143,15 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                 {/* Input Form Area */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1 pb-safe max-h-[75vh]">
                     {/* Modern Tab Selector */}
-                    <div className="flex p-1 bg-white/[0.03] border border-white/5 rounded-2xl">
+                    <div className="flex p-1 bg-foreground/[0.03] border border-foreground/5 rounded-2xl">
                         {types.map((t) => (
                             <button
                                 key={t.key}
                                 type="button"
                                 onClick={() => setType(t.key)}
                                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${type === t.key
-                                    ? "bg-white/10 text-white shadow-sm"
-                                    : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
+                                    ? "bg-foreground/10 text-foreground shadow-sm"
+                                    : "text-gray-500 hover:text-foreground hover:bg-foreground/5"
                                     }`}
                             >
                                 <span className="opacity-80 -mt-0.5">{t.icon}</span>
@@ -169,7 +169,7 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Task Title..."
                             autoFocus
-                            className="w-full bg-transparent border-0 border-b border-white/10 px-1 py-3 text-lg text-white placeholder-gray-500 focus:ring-0 focus:border-blue-500 transition-colors"
+                            className="w-full bg-transparent border-0 border-b border-foreground/10 px-1 py-3 text-lg text-foreground placeholder-gray-500 focus:ring-0 focus:border-blue-500 transition-colors"
                         />
 
                         {(type === "link" || type === "text") && (
@@ -178,7 +178,7 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                                 value={url}
                                 onChange={(e) => setUrl(e.target.value)}
                                 placeholder="https://..."
-                                className="w-full bg-transparent border-0 border-b border-white/10 px-1 py-3 text-sm text-blue-400 placeholder-gray-500 focus:ring-0 focus:border-blue-500 transition-colors"
+                                className="w-full bg-transparent border-0 border-b border-foreground/10 px-1 py-3 text-sm text-blue-500 dark:text-blue-400 placeholder-gray-500 focus:ring-0 focus:border-blue-500 transition-colors"
                             />
                         )}
 
@@ -187,7 +187,7 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Add description or notes..."
                             rows={3}
-                            className="w-full bg-transparent border-0 border-b border-white/10 px-1 py-3 text-sm text-gray-300 placeholder-gray-600 focus:ring-0 focus:border-blue-500 transition-colors resize-none"
+                            className="w-full bg-transparent border-0 border-b border-foreground/10 px-1 py-3 text-sm text-gray-700 dark:text-gray-300 placeholder-gray-500 focus:ring-0 focus:border-blue-500 transition-colors resize-none"
                         />
 
                         {/* Media Area */}
@@ -244,18 +244,18 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                         <button
                             type="button"
                             onClick={resetAndClose}
-                            className="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                            className="px-5 py-2.5 text-sm font-medium text-gray-500 hover:text-foreground transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting || isUploading || !title.trim()}
-                            className="px-6 py-2.5 text-sm font-medium bg-white text-black rounded-full hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
+                            className="px-6 py-2.5 text-sm font-medium bg-foreground text-background rounded-full hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
                         >
                             {isSubmitting ? (
                                 <>
-                                    <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                                    <div className="w-4 h-4 border-2 border-[var(--background)]/20 border-t-[var(--background)] rounded-full animate-spin" />
                                     Saving
                                 </>
                             ) : (

@@ -63,6 +63,16 @@ export default function TaskCard({ task, onClick }) {
             text: "text-gray-300",
             accent: "bg-gray-400",
         },
+        file: {
+            icon: (
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.66V6.75a9 9 0 015.25-1.5m-5.25 0A2.25 2.25 0 113.75 7.5M5.5 7.5H3.75M3.75 3h2.5m0 0H9m0 0c.027.2.055.404.08.605m0 0H9" />
+                </svg>
+            ),
+            bg: "bg-amber-500/10",
+            text: "text-amber-400",
+            accent: "bg-amber-500",
+        },
     };
 
     const config = typeConfig[task.type] || typeConfig.text;
@@ -161,6 +171,14 @@ export default function TaskCard({ task, onClick }) {
                             {config.icon}
                             <span>{task.type}</span>
                         </div>
+                        {task.files && task.files.length > 0 && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-purple-500/10 text-purple-400">
+                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.66V6.75a9 9 0 015.25-1.5m-5.25 0A2.25 2.25 0 113.75 7.5M5.5 7.5H3.75M3.75 3h2.5m0 0H9m0 0c.027.2.055.404.08.605m0 0H9" />
+                                </svg>
+                                <span>{task.files.length}</span>
+                            </span>
+                        )}
                         {task.linkPreview?.siteName && (
                             <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium truncate max-w-[80px] sm:max-w-[120px]">
                                 {task.linkPreview.siteName}

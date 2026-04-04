@@ -3,6 +3,58 @@ import dbConnect from "@/lib/mongodb";
 import Task from "@/models/Task";
 import { fetchLinkPreview } from "@/lib/linkPreview";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { invalidateTaskListCache } from "@/lib/taskCache";
+
+const IMAGE_EXTENSIONS = new Set([
+    "jpg",
+    "jpeg",
+    "png",
+    "gif",
+    "webp",
+    "avif",
+    "bmp",
+    "svg",
+    "heic",
+    "heif",
+]);
+
+const VIDEO_EXTENSIONS = new Set([
+    "mp4",
+    "mov",
+    "m4v",
+    "webm",
+    "avi",
+    "mkv",
+    "mpeg",
+    "mpg",
+    "3gp",
+]);
+
+function getExtension(fileName = "") {
+    const parts = String(fileName).toLowerCase().split(".");
+    return parts.length > 1 ? parts.pop() : "";
+}
+
+function getResourceType(fileType = "", fileName = "") {
+    if (fileType.startsWith("image/")) {
+        return "image";
+    }
+
+    if (fileType.startsWith("video/")) {
+        return "video";
+    }
+
+    const ext = getExtension(fileName);
+    if (IMAGE_EXTENSIONS.has(ext)) {
+        return "image";
+    }
+
+    if (VIDEO_EXTENSIONS.has(ext)) {
+        return "video";
+    }
+
+    return "raw";
+}
 
 // POST /api/share - Handle Web Share Target
 export async function POST(request) {
@@ -16,6 +68,7 @@ export async function POST(request) {
         let url = "";
         let mediaUrl = "";
         let type = "text";
+        let files = [];
 
         if (contentType.includes("multipart/form-data")) {
             const formData = await request.formData();
@@ -23,28 +76,56 @@ export async function POST(request) {
             description = formData.get("text") || formData.get("description") || "";
             url = formData.get("url") || "";
 
-            // Handle file uploads
-            const file = formData.get("file") || formData.get("media");
-            if (file && file.size > 0) {
+            // Handle one or many shared files from mobile share target.
+            const sharedFiles = [
+                ...formData.getAll("file"),
+                ...formData.getAll("media"),
+            ].filter((item) => item && typeof item === "object" && Number(item.size) > 0);
+
+            for (const file of sharedFiles) {
                 const buffer = Buffer.from(await file.arrayBuffer());
                 const fileType = file.type || "";
-
-                let resourceType = "auto";
-                if (fileType.startsWith("image/")) {
-                    type = "image";
-                    resourceType = "image";
-                } else if (fileType.startsWith("video/")) {
-                    type = "video";
-                    resourceType = "video";
-                }
+                const fileName = file.name || "file";
+                const resourceType = getResourceType(fileType, fileName);
 
                 try {
                     const result = await uploadToCloudinary(buffer, {
                         resource_type: resourceType,
                     });
-                    mediaUrl = result.secure_url;
+
+                    files.push({
+                        name: fileName,
+                        url: result.secure_url,
+                        publicId: result.public_id,
+                        size: file.size || 0,
+                        type: fileType,
+                        resourceType: result.resource_type || resourceType,
+                    });
+
+                    if (!mediaUrl && (resourceType === "image" || resourceType === "video")) {
+                        mediaUrl = result.secure_url;
+                    }
                 } catch (uploadError) {
                     console.error("Cloudinary upload failed:", uploadError);
+                }
+            }
+
+            if (files.length > 0) {
+                const hasVideo = files.some((f) => f.resourceType === "video");
+                const hasImage = files.some((f) => f.resourceType === "image");
+
+                if (hasVideo) {
+                    type = "video";
+                } else if (hasImage) {
+                    type = "image";
+                } else {
+                    type = "file";
+                }
+
+                if (!title) {
+                    title = files.length === 1
+                        ? files[0].name
+                        : `${files[0].name} +${files.length - 1} file(s)`;
                 }
             }
         } else {
@@ -96,7 +177,10 @@ export async function POST(request) {
             mediaUrl,
             type,
             linkPreview,
+            files,
         });
+
+        await invalidateTaskListCache();
 
         // If this came from a mobile share sheet (which uses formData), return a UI that auto-closes
         if (contentType.includes("multipart/form-data") || contentType.includes("application/x-www-form-urlencoded")) {

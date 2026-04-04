@@ -20,6 +20,16 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+Create a `.env.local` file and configure:
+
+- `MONGODB_URI` (required)
+- `REDIS_URL` (optional, enables Redis caching for task list reads)
+- `TASKS_CACHE_TTL_SECONDS` (optional, defaults to `60`)
+
+If `REDIS_URL` is not set or Redis is unavailable, the app safely falls back to MongoDB reads.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

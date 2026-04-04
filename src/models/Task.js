@@ -26,7 +26,7 @@ const TaskSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ["link", "image", "video", "text"],
+            enum: ["link", "image", "video", "text", "file"],
             default: "text",
         },
         isCompleted: {
@@ -39,6 +39,17 @@ const TaskSchema = new mongoose.Schema(
             image: { type: String, default: "" },
             siteName: { type: String, default: "" },
         },
+        files: [
+            {
+                name: { type: String, required: true },
+                url: { type: String, required: true },
+                publicId: { type: String, required: true },
+                size: { type: Number, default: 0 },
+                type: { type: String, default: "" },
+                resourceType: { type: String, default: "raw" },
+                uploadedAt: { type: Date, default: Date.now },
+            },
+        ],
     },
     {
         timestamps: true,

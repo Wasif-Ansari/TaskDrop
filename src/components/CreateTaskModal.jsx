@@ -14,6 +14,7 @@ export default function CreateTaskModal({ isOpen, onClose }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [mediaUrl, setMediaUrl] = useState("");
+    const [files, setFiles] = useState([]);
     const [error, setError] = useState("");
     const fileInputRef = useRef(null);
 
@@ -32,39 +33,56 @@ export default function CreateTaskModal({ isOpen, onClose }) {
     if (!isOpen || !mounted) return null;
 
     const handleFileUpload = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        const fileList = e.target.files;
+        if (!fileList || fileList.length === 0) return;
 
-        setIsUploading(true);
-        setError("");
+        // Support multiple file uploads
+        for (let i = 0; i < fileList.length; i++) {
+            const file = fileList[i];
+            setIsUploading(true);
+            setError("");
 
-        try {
-            const formData = new FormData();
-            formData.append("file", file);
+            try {
+                const formData = new FormData();
+                formData.append("file", file);
 
-            const res = await fetch("/api/upload", {
-                method: "POST",
-                body: formData,
-            });
+                const res = await fetch("/api/upload", {
+                    method: "POST",
+                    body: formData,
+                });
 
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.error || "Upload failed");
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || "Upload failed");
+                }
+
+                const data = await res.json();
+                
+                // Add to files array
+                setFiles((prev) => [...prev, data]);
+
+                // Auto-set type for first file if image/video
+                if (type === "text" && files.length === 0) {
+                    if (file.type.startsWith("image/")) {
+                        setType("image");
+                    } else if (file.type.startsWith("video/")) {
+                        setType("video");
+                    } else {
+                        setType("file");
+                    }
+                }
+            } catch (err) {
+                setError(err.message);
             }
-
-            const data = await res.json();
-            setMediaUrl(data.url);
-
-            if (file.type.startsWith("image/")) {
-                setType("image");
-            } else if (file.type.startsWith("video/")) {
-                setType("video");
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsUploading(false);
         }
+
+        setIsUploading(false);
+        // Reset file input
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const removeFile = (index) => {
+        setFiles((prev) => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
@@ -82,8 +100,9 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                 title: title.trim(),
                 description: description.trim(),
                 url: url.trim(),
-                mediaUrl,
+                mediaUrl: files.length > 0 ? files[0].url : "",
                 type,
+                files: files.length > 0 ? files : [],
             });
             resetAndClose();
         } catch (err) {
@@ -99,6 +118,7 @@ export default function CreateTaskModal({ isOpen, onClose }) {
         setDescription("");
         setUrl("");
         setMediaUrl("");
+        setFiles([]);
         setError("");
         onClose();
     };
@@ -108,6 +128,7 @@ export default function CreateTaskModal({ isOpen, onClose }) {
         { key: "link", label: "Link", icon: "🔗" },
         { key: "image", label: "Image", icon: "🖼️" },
         { key: "video", label: "Video", icon: "🎬" },
+        { key: "file", label: "Files", icon: "📎" },
     ];
 
     return createPortal(
@@ -191,43 +212,95 @@ export default function CreateTaskModal({ isOpen, onClose }) {
                         />
 
                         {/* Media Area */}
-                        {(type === "image" || type === "video") && (
-                            <div
-                                onClick={() => fileInputRef.current?.click()}
-                                className={`mt-4 border border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300
-                  ${mediaUrl ? "border-emerald-500/30 bg-emerald-500/5" : "border-white/20 hover:border-white/40 hover:bg-white/5"}
-                `}
-                            >
-                                {isUploading ? (
-                                    <div className="flex flex-col items-center gap-3">
-                                        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                        <span className="text-sm font-medium text-gray-400 tracking-wide">Uploading to cloud...</span>
-                                    </div>
-                                ) : mediaUrl ? (
-                                    <div className="flex flex-col items-center gap-2">
-                                        <span className="text-xl">✅</span>
-                                        <span className="text-sm font-medium text-emerald-400">
-                                            Media ready
-                                        </span>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center gap-2">
-                                        <svg className="w-8 h-8 text-gray-500 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                                        </svg>
-                                        <span className="text-sm font-medium text-gray-300">
-                                            Browse for {type}
-                                        </span>
-                                        <span className="text-xs text-gray-500 uppercase tracking-wider">Max 50MB</span>
+                        {(type === "image" || type === "video" || type === "file") && (
+                            <div className="space-y-4">
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className={`mt-4 border border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300
+                      ${files.length > 0 ? "border-emerald-500/30 bg-emerald-500/5" : "border-white/20 hover:border-white/40 hover:bg-white/5"}
+                    `}
+                                >
+                                    {isUploading ? (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                            <span className="text-sm font-medium text-gray-400 tracking-wide">Uploading...</span>
+                                        </div>
+                                    ) : files.length > 0 ? (
+                                        <div className="flex flex-col items-center gap-2">
+                                            <span className="text-xl">✅</span>
+                                            <span className="text-sm font-medium text-emerald-400">
+                                                {files.length} file{files.length !== 1 ? "s" : ""} ready
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-2">
+                                            <svg className="w-8 h-8 text-gray-500 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                                            </svg>
+                                            <span className="text-sm font-medium text-gray-300">
+                                                Browse for {type === "file" ? "files" : type}
+                                            </span>
+                                            <span className="text-xs text-gray-500 uppercase tracking-wider">Max 100MB each</span>
+                                        </div>
+                                    )}
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        multiple={type === "file"}
+                                        accept={
+                                            type === "image"
+                                                ? "image/*"
+                                                : type === "video"
+                                                    ? "video/*"
+                                                    : "*"
+                                        }
+                                        onChange={handleFileUpload}
+                                        className="hidden"
+                                    />
+                                </div>
+
+                                {/* Files List */}
+                                {files.length > 0 && (
+                                    <div className="space-y-2">
+                                        {files.map((file, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="flex items-center justify-between p-3 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 transition-colors"
+                                            >
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <div className="text-lg flex-shrink-0">
+                                                        {file.type?.startsWith("image/")
+                                                            ? "🖼️"
+                                                            : file.type?.startsWith("video/")
+                                                                ? "🎬"
+                                                                : file.type?.includes("pdf")
+                                                                    ? "📄"
+                                                                    : file.format === "zip" || file.format === "rar"
+                                                                        ? "📦"
+                                                                        : "📎"}
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-medium text-foreground truncate">
+                                                            {file.name}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {file.size ? `${(file.size / 1024 / 1024).toFixed(2)}MB` : ""}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeFile(idx)}
+                                                    className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept={type === "image" ? "image/*" : "video/*"}
-                                    onChange={handleFileUpload}
-                                    className="hidden"
-                                />
                             </div>
                         )}
                     </div>

@@ -47,6 +47,7 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
         link: { label: "Link", color: "text-blue-400", border: "border-blue-500/20", icon: "🔗" },
         image: { label: "Image", color: "text-emerald-400", border: "border-emerald-500/20", icon: "🖼️" },
         video: { label: "Video", color: "text-rose-400", border: "border-rose-500/20", icon: "🎬" },
+        file: { label: "Files", color: "text-amber-400", border: "border-amber-500/20", icon: "📎" },
         text: { label: "Note", color: "text-gray-300", border: "border-gray-500/20", icon: "📝" },
     };
 
@@ -172,6 +173,66 @@ export default function TaskDetailModal({ task, isOpen, onClose }) {
                     {task.description && (
                         <div className="prose prose-invert prose-p:text-gray-400 prose-p:leading-relaxed max-w-none">
                             <p className="whitespace-pre-wrap text-[15px]">{task.description}</p>
+                        </div>
+                    )}
+
+                    {/* Files Section */}
+                    {task.files && task.files.length > 0 && (
+                        <div className="mt-8">
+                            <h3 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.66V6.75a9 9 0 015.25-1.5m-5.25 0A2.25 2.25 0 113.75 7.5M5.5 7.5H3.75M3.75 3h2.5m0 0H9m0 0c.027.2.055.404.08.605m0 0H9" />
+                                </svg>
+                                Attached Files ({task.files.length})
+                            </h3>
+                            <div className="space-y-2">
+                                {task.files.map((file, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="group flex items-center gap-3 px-4 py-3 bg-white/[0.03] border border-white/5 hover:border-amber-500/30 rounded-xl w-full transition-colors"
+                                    >
+                                        <div className="text-lg flex-shrink-0">
+                                            {file.type?.startsWith("image/")
+                                                ? "🖼️"
+                                                : file.type?.startsWith("video/")
+                                                    ? "🎬"
+                                                    : file.type?.includes("pdf")
+                                                        ? "📄"
+                                                        : file.type?.includes("word") || file.format === "docx"
+                                                            ? "📝"
+                                                            : file.type?.includes("sheet") || file.format === "xlsx"
+                                                                ? "📊"
+                                                                : file.format === "zip" || file.format === "rar"
+                                                                    ? "📦"
+                                                                    : "📎"}
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-medium text-amber-400 truncate group-hover:text-amber-300">
+                                                {file.name}
+                                            </p>
+                                            <p className="text-xs text-gray-500 mt-0.5">
+                                                {file.size ? `${(file.size / 1024 / 1024).toFixed(2)}MB` : ""}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                            <a
+                                                href={file.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-xs font-medium text-gray-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-white/10 hover:border-white/25 transition-colors"
+                                            >
+                                                View
+                                            </a>
+                                            <a
+                                                href={`/api/download?url=${encodeURIComponent(file.url)}&name=${encodeURIComponent(file.name || "download")}`}
+                                                className="text-xs font-medium text-amber-300 hover:text-amber-200 px-2.5 py-1.5 rounded-lg border border-amber-500/20 hover:border-amber-400/40 transition-colors"
+                                            >
+                                                Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>

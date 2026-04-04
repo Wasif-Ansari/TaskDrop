@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Task from "@/models/Task";
+import { invalidateTaskListCache } from "@/lib/taskCache";
 
 // PATCH /api/tasks/:id - Update a task
 export async function PATCH(request, { params }) {
@@ -19,6 +20,8 @@ export async function PATCH(request, { params }) {
         if (!task) {
             return NextResponse.json({ error: "Task not found" }, { status: 404 });
         }
+
+        await invalidateTaskListCache();
 
         return NextResponse.json({ task }, { status: 200 });
     } catch (error) {
@@ -42,6 +45,8 @@ export async function DELETE(request, { params }) {
         if (!task) {
             return NextResponse.json({ error: "Task not found" }, { status: 404 });
         }
+
+        await invalidateTaskListCache();
 
         return NextResponse.json({ message: "Task deleted" }, { status: 200 });
     } catch (error) {
